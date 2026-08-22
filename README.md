@@ -27,5 +27,3 @@ Here is a revised and professional project description tailored for your GitHub 
 - **Database (The Vault):** PostgreSQL managed by Prisma to securely store declarative definitions, hashed webhook payloads, encrypted credentials, and failure snapshots.
 
 ---
-
-Does this align better with the branding you want for the repository, or would you like to emphasize the AI/Agentic capabilities further?
