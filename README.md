@@ -1,5 +1,3 @@
-Here is a revised and professional project description tailored for your GitHub README. I have removed the clone reference and framed it around AI orchestration and scalable distributed systems based on your architecture.
-
 ## Flow Ai: AI Orchestration & Workflow Engine
 
 **Flow Ai** is a highly scalable, event-driven AI orchestration and workflow automation engine. Designed with a distributed systems architecture, it separates concerns into a visual control plane, an API gateway, a message broker, and sandboxed execution workers to ensure a non-blocking, asynchronous developer experience.
