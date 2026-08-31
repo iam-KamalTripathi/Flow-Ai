@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // Modern JS features
+    "module": "ESNext", // Node.js default module system
+    "moduleResolution": "bundler", // Resolve imports like Node.js
+
+    "strict": true, // Enable all strict checks
+
+    "skipLibCheck": true, // Faster builds, skip type checks in node_modules
+
+    "declaration": true,
+    "declarationMap": true,
+
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  }
+}

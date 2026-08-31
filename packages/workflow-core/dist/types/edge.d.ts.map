@@ -1,0 +1,1 @@
+{"version":3,"file":"edge.d.ts","sourceRoot":"","sources":["../../src/types/edge.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,YAAY;IAC3B,EAAE,EAAE,MAAM,CAAC;IAEX,MAAM,EAAE,MAAM,CAAC;IACf,YAAY,EAAE,MAAM,CAAC;IAErB,MAAM,EAAE,MAAM,CAAC;IACf,YAAY,EAAE,MAAM,CAAC;CACtB"}
