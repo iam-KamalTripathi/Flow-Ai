@@ -1,11 +1,11 @@
 {
-  "name": "@flowAi/node-definitions",
+  "name": "@FlowAi/node-definitions",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
-  "types": "./ddist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit"
