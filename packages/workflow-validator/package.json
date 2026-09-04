@@ -1,0 +1,19 @@
+{
+  "name": "@FlowAi/workflow-validator",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@FlowAi/workflow-core": "workspace:*",
+    "@FlowAi/node-definitions": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
