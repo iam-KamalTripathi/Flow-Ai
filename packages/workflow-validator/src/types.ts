@@ -16,7 +16,10 @@ export type ValidationCode =
   | "TRIGGER_HAS_INPUT"
   | "CYCLE_DETECTED"
   | "ORPHAN_NODE"
-  | "INVALID_NODE_CONFIG";
+  | "INVALID_NODE_CONFIG"
+  | "NO_TRIGGER"
+  | "TRIGGER_HAS_INPUT"
+  | "CYCLE_DETECTED";
 
 export interface ValidationIssue {
   code: ValidationCode;

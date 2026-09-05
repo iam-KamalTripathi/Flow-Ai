@@ -5,6 +5,9 @@ import type { ValidationIssue, ValidationResult } from "./types.js";
 import { validateNodes } from "./validators/node-validator.js";
 import { validateEdges } from "./validators/edge-validator.js";
 
+import { buildGraph } from "./graph/build-graph.js";
+import { validateTopology } from "./validators/topology-validators.js";
+
 export function validateWorkflow(
   workflow: WorkflowDefinition,
 ): ValidationResult {
@@ -13,7 +16,11 @@ export function validateWorkflow(
   const nodeIssues = validateNodes(workflow);
   const edgeIssues = validateEdges(workflow);
 
-  issues.push(...nodeIssues, ...edgeIssues);
+  const graph = buildGraph(workflow);
+
+  const topologyIssues = validateTopology(workflow, graph);
+
+  issues.push(...nodeIssues, ...edgeIssues, ...topologyIssues);
 
   const errors = issues.filter((issue) => issue.severity === "error");
 
