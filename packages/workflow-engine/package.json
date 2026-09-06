@@ -1,0 +1,21 @@
+{
+  "name": "@FlowAi/workflow-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index/d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@FlowAi/workflow-core": "workspace:*",
+    "@FlowAi/workflow-validator": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
