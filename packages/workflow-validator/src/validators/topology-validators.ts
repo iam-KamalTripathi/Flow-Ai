@@ -12,6 +12,9 @@ export function validateTopology(
   validateTriggers(workflow, graph, issues);
 
   validateCycles(graph, issues);
+
+  validateReachability(workflow, graph, issues);
+
   return issues;
 }
 
@@ -72,14 +75,64 @@ function validateCycles(graph: WorkflowGraph, issues: ValidationIssue[]): void {
   }
 }
 
+function validateReachability(
+  workflow: WorkflowDefinition,
+  graph: WorkflowGraph,
+  issue: ValidationIssue[],
+): void {
+  const triggerNodes = workflow.nodes.filter((node) => {
+    const definition = getNodeDefinition(node.type);
+    return definition?.category === "trigger";
+  });
+
+  if (triggerNodes.length === 0) return;
+
+  const rechable = new Set<string>();
+
+  const queue: string[] = [];
+
+  for (const trigger of triggerNodes) {
+    rechable.add(trigger.id);
+    queue.push(trigger.id);
+  }
+
+  while (queue.length > 0) {
+    const currentNodeId = queue.shift()!;
+    const neighbours = graph.adjacency.get(currentNodeId) ?? [];
+
+    for (const neighbour of neighbours) {
+      if (rechable.has(neighbour)) continue;
+
+      rechable.add(neighbour);
+      queue.push(neighbour);
+    }
+  }
+
+  for (const node of workflow.nodes) {
+    if (rechable.has(node.id)) continue;
+
+    issue.push({
+      code: "UNREACHABLE_NODE",
+      message: `Node ${node.id} cannot be reached from any trigger`,
+      severity: "error",
+      nodeId: node.id,
+    });
+  }
+}
+
 function hasCycle(
   nodeId: string,
   graph: WorkflowGraph,
   visiting: Set<string>,
   visited: Set<string>,
 ): boolean {
-  if (visiting.has(nodeId)) return true;
-  if (visited.has(nodeId)) return false;
+  if (visiting.has(nodeId)) {
+    return true;
+  }
+
+  if (visited.has(nodeId)) {
+    return false;
+  }
 
   visiting.add(nodeId);
 
@@ -89,9 +142,10 @@ function hasCycle(
     if (hasCycle(neighbour, graph, visiting, visited)) {
       return true;
     }
-
-    visiting.delete(nodeId);
-    visited.add(nodeId);
   }
+
+  visiting.delete(nodeId);
+  visited.add(nodeId);
+
   return false;
 }

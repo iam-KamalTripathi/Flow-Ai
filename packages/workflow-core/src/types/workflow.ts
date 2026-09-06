@@ -7,11 +7,10 @@ export interface WorkflowMetaData {
 }
 
 export interface WorkflowDefinition {
-  id: String;
+  id: string;
   name: string;
   version: number;
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
-
   metadata?: WorkflowMetaData;
 }

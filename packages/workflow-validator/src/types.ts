@@ -19,7 +19,8 @@ export type ValidationCode =
   | "INVALID_NODE_CONFIG"
   | "NO_TRIGGER"
   | "TRIGGER_HAS_INPUT"
-  | "CYCLE_DETECTED";
+  | "CYCLE_DETECTED"
+  | "UNREACHABLE_NODE";
 
 export interface ValidationIssue {
   code: ValidationCode;
