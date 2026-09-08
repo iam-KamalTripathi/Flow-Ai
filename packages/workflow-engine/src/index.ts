@@ -6,3 +6,5 @@ export type {
 export type { NodeExecutor } from "./executors/node-executor.js";
 
 export { ExecutorRegistory } from "./executors/executor-registry.js";
+
+export { ExecutionEngine } from "./engine/execution-engine.js";

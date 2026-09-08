@@ -1,5 +1,5 @@
-import type { WorkflowEdge } from "./edge";
-import type { WorkflowNode } from "./node";
+import type { WorkflowEdge } from "./edge.js";
+import type { WorkflowNode } from "./node.js";
 
 export interface WorkflowMetaData {
   createdAt?: string;

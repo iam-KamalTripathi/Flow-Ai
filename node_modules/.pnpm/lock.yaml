@@ -24,6 +24,19 @@ importers:
 
   packages/workflow-core: {}
 
+  packages/workflow-engine:
+    dependencies:
+      '@FlowAi/workflow-core':
+        specifier: workspace:*
+        version: link:../workflow-core
+      '@FlowAi/workflow-validator':
+        specifier: workspace:*
+        version: link:../workflow-validator
+    devDependencies:
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(tsx@4.23.13)
+
   packages/workflow-validator:
     dependencies:
       '@FlowAi/node-definitions':
