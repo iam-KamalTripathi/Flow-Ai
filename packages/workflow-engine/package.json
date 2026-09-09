@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@FlowAi/workflow-core": "workspace:*",
-    "@FlowAi/workflow-validator": "workspace:*"
+    "@FlowAi/workflow-validator": "workspace:*",
+    "@FlowAi/node-definitions": "workspace:*"
   },
   "devDependencies": {
     "vitest": "^3.2.4"

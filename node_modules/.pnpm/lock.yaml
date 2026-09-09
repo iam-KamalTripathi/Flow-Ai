@@ -26,6 +26,9 @@ importers:
 
   packages/workflow-engine:
     dependencies:
+      '@FlowAi/node-definitions':
+        specifier: workspace:*
+        version: link:../node-definitions
       '@FlowAi/workflow-core':
         specifier: workspace:*
         version: link:../workflow-core

@@ -4,13 +4,13 @@ import type { WorkflowGraph } from "@FlowAi/workflow-validator";
 
 import type { ExecutionContext } from "../context/execution-context.js";
 
-import { ExecutorRegistory } from "../executors/executor-registry.js";
+import { ExecutorRegistry } from "../executors/executor-registry.js";
 
 export class ExecutionEngine {
   constructor(
     private readonly workflow: WorkflowDefinition,
     private readonly graph: WorkflowGraph,
-    private readonly registry: ExecutorRegistory,
+    private readonly registry: ExecutorRegistry,
   ) {}
 
   async execute(context: ExecutionContext): Promise<ExecutionContext> {
