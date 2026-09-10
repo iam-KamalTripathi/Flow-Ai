@@ -1,5 +1,10 @@
 export type ExecutionStatus = "pending" | "running" | "success" | "failed";
 
+export interface ExecutionError {
+  nodeId: string;
+  message: string;
+}
+
 export interface ExecutionContext {
   executionId: string;
   workflowId: string;
@@ -8,4 +13,5 @@ export interface ExecutionContext {
   triggerInput: unknown;
   nodeOutputs: Map<string, unknown>;
   startedAt: string;
+  error?: ExecutionError;
 }

@@ -25,24 +25,41 @@ export class ExecutionEngine {
 
     let currentNode: WorkflowNode = startNode;
 
-    while (true) {
-      context.currentNodeId = currentNode.id;
+    try {
+      while (true) {
+        context.currentNodeId = currentNode.id;
 
-      const executor = this.registry.get(currentNode.type);
-      const input = this.getNodeInput(currentNode, context);
-      const output = await executor.execute(currentNode, input, context);
+        const executor = this.registry.get(currentNode.type);
 
-      context.nodeOutputs.set(currentNode.id, output);
+        const input = this.getNodeInput(currentNode, context);
 
-      const nextNode = this.findNextNode(currentNode);
-      if (!nextNode) {
-        break;
+        const output = await executor.execute(currentNode, input, context);
+
+        context.nodeOutputs.set(currentNode.id, output);
+
+        const nextNode = this.findNextNode(currentNode);
+
+        if (!nextNode) {
+          break;
+        }
+
+        currentNode = nextNode;
       }
-      currentNode = nextNode;
+
+      context.currentNodeId = null;
+      context.status = "success";
+
+      return context;
+    } catch (error) {
+      context.status = "failed";
+
+      context.error = {
+        nodeId: currentNode.id,
+        message: error instanceof Error ? error.message : String(error),
+      };
+
+      return context;
     }
-    context.currentNodeId = null;
-    context.status = "success";
-    return context;
   }
 
   private findStartNode(): WorkflowNode | undefined {
