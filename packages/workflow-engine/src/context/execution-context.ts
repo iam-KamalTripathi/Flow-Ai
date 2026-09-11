@@ -3,6 +3,12 @@ export type ExecutionStatus = "pending" | "running" | "success" | "failed";
 export interface ExecutionError {
   nodeId: string;
   message: string;
+  retryable: boolean;
+}
+
+export interface RetryState {
+  attempts: number;
+  maxAttempts: number;
 }
 
 export interface ExecutionContext {
@@ -14,4 +20,5 @@ export interface ExecutionContext {
   nodeOutputs: Map<string, unknown>;
   startedAt: string;
   error?: ExecutionError;
+  retryState?: RetryState;
 }

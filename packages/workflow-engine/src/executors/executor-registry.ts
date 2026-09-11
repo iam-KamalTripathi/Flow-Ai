@@ -1,6 +1,7 @@
 import type { NodeExecutor } from "./node-executor.js";
 import { ManualTriggerExecutor } from "./manual-trigger-executor.js";
 import { TransformExecutor } from "./transform-executor.js";
+import { HttpRequestExecutor } from "./http-request-executor.js";
 
 export class ExecutorRegistry {
   private readonly executors = new Map<string, NodeExecutor>();
@@ -8,6 +9,7 @@ export class ExecutorRegistry {
   constructor() {
     this.register("trigger.manual", new ManualTriggerExecutor());
     this.register("data.transform", new TransformExecutor());
+    this.register("action.http", new HttpRequestExecutor());
   }
 
   register(nodeType: string, executor: NodeExecutor): void {
