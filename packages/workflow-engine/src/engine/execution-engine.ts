@@ -6,6 +6,7 @@ import type { ExecutionContext } from "../context/execution-context.js";
 
 import { ExecutorRegistry } from "../executors/executor-registry.js";
 import { ExecutionError } from "../errors/execution-error.js";
+import { NodeExecutionResult } from "../executors/node-executor.js";
 
 interface ExecutionOptions {
   maxRetries?: number;
@@ -38,11 +39,11 @@ export class ExecutionEngine {
 
         const input = this.getNodeInput(currentNode, context);
 
-        const output = await this.executeWithRetry(currentNode, input, context);
+        const result = await this.executeWithRetry(currentNode, input, context);
 
-        context.nodeOutputs.set(currentNode.id, output);
+        context.nodeOutputs.set(currentNode.id, result.output);
 
-        const nextNode = this.findNextNode(currentNode);
+        const nextNode = this.findNextNode(currentNode, result.outputHandle);
 
         if (!nextNode) {
           break;
@@ -92,23 +93,26 @@ export class ExecutionEngine {
     return context.nodeOutputs.get(previousNodeId);
   }
 
-  private findNextNode(node: WorkflowNode): WorkflowNode | undefined {
+  private findNextNode(
+    node: WorkflowNode,
+    outputHandle: string,
+  ): WorkflowNode | undefined {
     const outgoing = this.graph.outgoingEdges.get(node.id) ?? [];
 
-    const nextNodeId = outgoing[0]?.target;
+    const edge = outgoing.find((edge) => edge.sourceHandle === outputHandle);
 
-    if (!nextNodeId) {
+    if (!edge) {
       return undefined;
     }
 
-    return this.graph.nodes.get(nextNodeId);
+    return this.graph.nodes.get(edge.target);
   }
 
   private async executeWithRetry(
     currentNode: WorkflowNode,
     input: unknown,
     context: ExecutionContext,
-  ): Promise<unknown> {
+  ): Promise<NodeExecutionResult> {
     const executor = this.registry.get(currentNode.type);
 
     const maxRetries = this.options.maxRetries ?? 0;

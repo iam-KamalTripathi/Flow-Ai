@@ -13,6 +13,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.34.5",
   "devDependencies": {
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   }
 }

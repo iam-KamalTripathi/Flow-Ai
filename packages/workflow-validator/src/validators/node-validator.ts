@@ -17,6 +17,7 @@ export function validateNodes(workflow: WorkflowDefinition): ValidationIssue[] {
   }
 
   const nodeIds = new Set<string>();
+  let triggerCount = 0;
 
   for (const node of workflow.nodes) {
     if (nodeIds.has(node.id)) {
@@ -44,6 +45,10 @@ export function validateNodes(workflow: WorkflowDefinition): ValidationIssue[] {
       continue;
     }
 
+    if (node.type.startsWith("trigger.")) {
+      triggerCount++;
+    }
+
     if (node.config === null || typeof node.config !== "object") {
       issues.push({
         code: "INVALID_NODE_CONFIG",
@@ -53,6 +58,22 @@ export function validateNodes(workflow: WorkflowDefinition): ValidationIssue[] {
         field: "config",
       });
     }
+  }
+
+  if (triggerCount === 0) {
+    issues.push({
+      code: "NO_TRIGGER",
+      message: "Workflow must contain at least one trigger node.",
+      severity: "error",
+    });
+  }
+
+  if (triggerCount > 1) {
+    issues.push({
+      code: "MULTIPLE_TRIGGERS",
+      message: "Workflow must contain exactly one trigger node.",
+      severity: "error",
+    });
   }
 
   return issues;

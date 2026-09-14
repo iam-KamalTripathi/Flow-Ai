@@ -8,11 +8,7 @@ import type { NodeExecutor } from "./node-executor.js";
 import { ExecutionError } from "../errors/execution-error.js";
 
 export class HttpRequestExecutor implements NodeExecutor {
-  async execute(
-    node: WorkflowNode,
-    input: unknown,
-    context: ExecutionContext,
-  ): Promise<unknown> {
+  async execute(node: WorkflowNode, input: unknown, context: ExecutionContext) {
     const config = node.config as HttpRequestConfig;
 
     const url = new URL(config.url);
@@ -56,8 +52,11 @@ export class HttpRequestExecutor implements NodeExecutor {
       }
 
       return {
-        status: response.status,
-        data,
+        output: {
+          status: response.status,
+          data,
+        },
+        outputHandle: "main",
       };
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {

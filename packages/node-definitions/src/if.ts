@@ -41,8 +41,8 @@ export const ifDefinition: NodeDefinition<IfConfig> = {
       maxConnections: 1,
     },
     {
-      id: "main",
-      name: "Main",
+      id: "false",
+      name: "False",
       direction: "output",
       maxConnections: 1,
     },

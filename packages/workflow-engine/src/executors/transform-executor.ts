@@ -10,7 +10,7 @@ export class TransformExecutor implements NodeExecutor {
     node: WorkflowNode<TransformConfig>,
     input: unknown,
     _context: ExecutionContext,
-  ): Promise<unknown> {
+  ) {
     const config = node.config;
 
     if (typeof input !== "object" || input == null || Array.isArray(input)) {
@@ -27,6 +27,9 @@ export class TransformExecutor implements NodeExecutor {
       output[outputKey] = inputData[inputKey];
     }
 
-    return output;
+    return {
+      output,
+      outputHandle: "main",
+    };
   }
 }

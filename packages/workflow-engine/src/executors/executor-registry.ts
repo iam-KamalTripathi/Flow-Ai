@@ -2,6 +2,7 @@ import type { NodeExecutor } from "./node-executor.js";
 import { ManualTriggerExecutor } from "./manual-trigger-executor.js";
 import { TransformExecutor } from "./transform-executor.js";
 import { HttpRequestExecutor } from "./http-request-executor.js";
+import { IfExecutor } from "./if-executors.js";
 
 export class ExecutorRegistry {
   private readonly executors = new Map<string, NodeExecutor>();
@@ -10,6 +11,7 @@ export class ExecutorRegistry {
     this.register("trigger.manual", new ManualTriggerExecutor());
     this.register("data.transform", new TransformExecutor());
     this.register("action.http", new HttpRequestExecutor());
+    this.register("logic.if", new IfExecutor());
   }
 
   register(nodeType: string, executor: NodeExecutor): void {

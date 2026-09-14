@@ -9,7 +9,10 @@ export class ManualTriggerExecutor implements NodeExecutor {
     _node: WorkflowNode,
     input: unknown,
     _context: ExecutionContext,
-  ): Promise<unknown> {
-    return input;
+  ) {
+    return {
+      output: input,
+      outputHandle: "main",
+    };
   }
 }
