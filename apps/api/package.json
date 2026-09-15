@@ -1,0 +1,25 @@
+{
+  "name": "@FlowAi/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@FlowAi/node-definitions": "workspace:*",
+    "@FlowAi/workflow-core": "workspace:*",
+    "@FlowAi/workflow-engine": "workspace:*",
+    "@FlowAi/workflow-validator": "workspace:*",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "tsx": "^4.23.13"
+  }
+}
