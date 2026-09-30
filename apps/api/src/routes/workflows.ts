@@ -2,22 +2,29 @@ import { Router } from "express";
 
 import type { WorkflowDefinition } from "@FlowAi/workflow-core";
 
+import { ExecutionRepository } from "../db/execution-repositry.js";
 import { WorkflowRepository } from "../db/workflow-repository.js";
-import { WorkflowService } from "../services/workflow-service.js";
 import { ExecutionService } from "../services/execution-service.js";
+import { WorkflowService } from "../services/workflow-service.js";
 
 const router: Router = Router();
 
-const repository = new WorkflowRepository();
-const service = new WorkflowService(repository);
-const executionService = new ExecutionService(repository);
+const workflowRepository = new WorkflowRepository();
+
+const workflowService = new WorkflowService(workflowRepository);
+const executionRepository = new ExecutionRepository();
+
+const executionService = new ExecutionService(
+  workflowRepository,
+  executionRepository,
+);
 
 // Create workflow
 router.post("/", async (req, res) => {
   try {
     const workflow = req.body as WorkflowDefinition;
 
-    const created = await service.createWorkflow(workflow);
+    const created = await workflowService.createWorkflow(workflow);
 
     res.status(201).json(created);
   } catch (error) {
@@ -31,7 +38,7 @@ router.post("/", async (req, res) => {
 // Get all workflows
 router.get("/", async (_req, res) => {
   try {
-    const workflows = await service.getWorkflows();
+    const workflows = await workflowService.getWorkflows();
 
     res.status(200).json(workflows);
   } catch (error) {
@@ -66,10 +73,36 @@ router.post("/:id/execute", async (req, res) => {
   }
 });
 
+router.get("/:id/executions", async (req, res) => {
+  try {
+    const executions = await executionService.getWorkflowExecutions(
+      req.params.id,
+    );
+
+    res.status(200).json(executions);
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to fetch workflow executions.";
+
+    if (message.includes("not found")) {
+      res.status(404).json({
+        error: message,
+      });
+      return;
+    }
+
+    res.status(500).json({
+      error: message,
+    });
+  }
+});
+
 // Get workflow by ID
 router.get("/:id", async (req, res) => {
   try {
-    const workflow = await service.getWorkflow(req.params.id);
+    const workflow = await workflowService.getWorkflow(req.params.id);
 
     if (!workflow) {
       res.status(404).json({
@@ -92,7 +125,10 @@ router.put("/:id", async (req, res) => {
   try {
     const workflow = req.body as WorkflowDefinition;
 
-    const updated = await service.updateWorkflow(req.params.id, workflow);
+    const updated = await workflowService.updateWorkflow(
+      req.params.id,
+      workflow,
+    );
 
     res.status(200).json(updated);
   } catch (error) {
@@ -106,7 +142,7 @@ router.put("/:id", async (req, res) => {
 // Delete workflow
 router.delete("/:id", async (req, res) => {
   try {
-    await service.deleteWorkflow(req.params.id);
+    await workflowService.deleteWorkflow(req.params.id);
 
     res.status(204).send();
   } catch (error) {
