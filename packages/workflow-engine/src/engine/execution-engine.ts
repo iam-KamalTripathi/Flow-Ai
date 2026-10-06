@@ -23,7 +23,7 @@ export class ExecutionEngine {
   async execute(context: ExecutionContext): Promise<ExecutionContext> {
     context.status = "running";
 
-    const startNode = this.findStartNode();
+    const startNode = this.findStartNode(context);
 
     if (!startNode) {
       context.status = "failed";
@@ -69,7 +69,13 @@ export class ExecutionEngine {
     }
   }
 
-  private findStartNode(): WorkflowNode | undefined {
+  private findStartNode(context: ExecutionContext): WorkflowNode | undefined {
+    // Resume execution from the node stored in the snapshot.
+    if (context.currentNodeId !== null) {
+      return this.graph.nodes.get(context.currentNodeId);
+    }
+
+    // Normal execution starts from the trigger.
     return this.workflow.nodes.find((node) => {
       const incoming = this.graph.incomingEdges.get(node.id) ?? [];
 

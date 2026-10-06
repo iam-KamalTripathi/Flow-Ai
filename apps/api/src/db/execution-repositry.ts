@@ -1,5 +1,10 @@
-import type { ExecutionContext } from "@FlowAi/workflow-engine";
-import type { Prisma } from "@prisma/client";
+import type {
+  ExecutionContext,
+  ExecutionSnapshot,
+} from "@FlowAi/workflow-engine";
+
+import { Prisma as PrismaTypes } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { prisma } from "./prisma.js";
 
@@ -30,7 +35,7 @@ export class ExecutionRepository {
   }
 
   async updateFromContext(context: ExecutionContext) {
-    const data: Prisma.ExecutionUpdateInput = {
+    const data: PrismaTypes.ExecutionUpdateInput = {
       status: context.status,
       currentNodeId: context.currentNodeId,
     };
@@ -38,7 +43,7 @@ export class ExecutionRepository {
     if (context.error !== undefined) {
       data.error = JSON.parse(
         JSON.stringify(context.error),
-      ) as Prisma.InputJsonValue;
+      ) as PrismaTypes.InputJsonValue;
     }
 
     if (context.status === "success" || context.status === "failed") {
@@ -71,6 +76,31 @@ export class ExecutionRepository {
       },
       orderBy: {
         startedAt: "desc",
+      },
+    });
+  }
+
+  async saveSnapshot(executionId: string, snapshot: ExecutionSnapshot) {
+    return prisma.execution.update({
+      where: {
+        id: executionId,
+      },
+      data: {
+        snapshot: JSON.parse(JSON.stringify(snapshot)) as Prisma.InputJsonValue,
+      },
+    });
+  }
+
+  async prepareForResume(executionId: string, currentNodeId: string) {
+    return prisma.execution.update({
+      where: {
+        id: executionId,
+      },
+      data: {
+        status: "pending",
+        currentNodeId,
+        error: Prisma.DbNull,
+        finishedAt: null,
       },
     });
   }
