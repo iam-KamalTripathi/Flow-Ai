@@ -1,0 +1,26 @@
+{
+  "name": "@FlowAi/worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/worker.js",
+  "types": "./dist/workerd.ts",
+  "scripts": {
+    "dev": "tsx watch src/worker.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/worker.js"
+  },
+  "dependencies": {
+    "@FlowAi/workflow-core": "workspace:*",
+    "@FlowAi/workflow-engine": "workspace:*",
+    "@FlowAi/workflow-validator": "workspace:*",
+    "bullmq": "^6.3.11",
+    "ioredis": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}

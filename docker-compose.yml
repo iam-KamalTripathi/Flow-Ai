@@ -15,5 +15,17 @@ services:
     volumes:
       - flowai_postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7
+    container_name: flowai-redis
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - flowai_redis_data:/data
+
 volumes:
   flowai_postgres_data:
+  flowai_redis_data:
