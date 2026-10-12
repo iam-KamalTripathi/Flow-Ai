@@ -15,6 +15,8 @@
     "@FlowAi/node-definitions": "workspace:*",
     "@FlowAi/workflow-core": "workspace:*",
     "@FlowAi/workflow-engine": "workspace:*",
+    "@FlowAi/workflow-persistence": "workspace:*",
+    "@FlowAi/workflow-queue": "workspace:*",
     "@FlowAi/workflow-validator": "workspace:*",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",

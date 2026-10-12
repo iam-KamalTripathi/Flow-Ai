@@ -104,4 +104,20 @@ export class ExecutionRepository {
       },
     });
   }
+
+  async markEnqueueFailed(executionId: string, message: string) {
+    return prisma.execution.update({
+      where: {
+        id: executionId,
+      },
+      data: {
+        status: "failed",
+        error: {
+          stage: "enqueue",
+          message,
+        } as PrismaTypes.InputJsonValue,
+        finishedAt: new Date(),
+      },
+    });
+  }
 }

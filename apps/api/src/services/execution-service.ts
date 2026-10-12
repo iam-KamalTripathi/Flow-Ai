@@ -1,5 +1,8 @@
 import type { WorkflowDefinition } from "@FlowAi/workflow-core";
 
+import { enqueueExecution } from "@FlowAi/workflow-queue";
+import { validateWorkflow } from "@FlowAi/workflow-validator";
+
 import {
   ExecutionEngine,
   ExecutorRegistry,
@@ -210,6 +213,68 @@ export class ExecutionService {
       await this.executionRepository.updateFromContext(context);
 
       throw error;
+    }
+  }
+
+  async queueWorkflowExecution(
+    workflowId: string,
+    input: ExecuteWorkflowInput,
+  ) {
+    // 1. Load the saved workflow.
+    const savedWorkflow = await this.workflowRepository.findById(workflowId);
+
+    if (!savedWorkflow) {
+      throw new Error(`Workflow "${workflowId}" not found.`);
+    }
+
+    // 2. Validate the stored definition before scheduling it.
+    const workflow = savedWorkflow.definition as unknown as WorkflowDefinition;
+
+    const validation = validateWorkflow(workflow);
+
+    if (!validation.valid) {
+      throw new Error(
+        `Invalid workflow: ${validation.errors
+          .map((issue) => issue.message)
+          .join("; ")}`,
+      );
+    }
+
+    // 3. Generate an ID for this execution.
+    const executionId = crypto.randomUUID();
+    const startedAt = new Date().toISOString();
+
+    // 4. Persist the execution before enqueueing the job.
+    await this.executionRepository.create({
+      id: executionId,
+      workflowId: savedWorkflow.id,
+      status: "pending",
+      currentNodeId: null,
+      triggerInput: input.triggerInput,
+      startedAt,
+    });
+
+    try {
+      // 5. Send a small job message to Redis through BullMQ.
+      const job = await enqueueExecution({
+        executionId,
+        workflowId: savedWorkflow.id,
+      });
+
+      // 6. Return the information needed by the API route.
+      return {
+        executionId,
+        workflowId: savedWorkflow.id,
+        status: "pending" as const,
+        jobId: job.id,
+      };
+    } catch (error) {
+      // 7. If enqueueing fails, persist that failure.
+      const message = error instanceof Error ? error.message : String(error);
+
+      await this.executionRepository.markEnqueueFailed(executionId, message);
+
+      throw new Error(`Failed to queue workflow execution: ${message}`);
     }
   }
 }

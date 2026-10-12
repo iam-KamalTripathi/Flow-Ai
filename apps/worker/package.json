@@ -14,6 +14,8 @@
   "dependencies": {
     "@FlowAi/workflow-core": "workspace:*",
     "@FlowAi/workflow-engine": "workspace:*",
+    "@FlowAi/workflow-persistence": "workspace:*",
+    "@FlowAi/workflow-queue": "workspace:*",
     "@FlowAi/workflow-validator": "workspace:*",
     "bullmq": "^6.3.11",
     "ioredis": "^6.0.0"

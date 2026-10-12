@@ -26,6 +26,12 @@ importers:
       '@FlowAi/workflow-engine':
         specifier: workspace:*
         version: link:../../packages/workflow-engine
+      '@FlowAi/workflow-persistence':
+        specifier: workspace:*
+        version: link:../../packages/workflow-persistence
+      '@FlowAi/workflow-queue':
+        specifier: workspace:*
+        version: link:../../packages/workflow-queue
       '@FlowAi/workflow-validator':
         specifier: workspace:*
         version: link:../../packages/workflow-validator
@@ -63,6 +69,12 @@ importers:
       '@FlowAi/workflow-engine':
         specifier: workspace:*
         version: link:../../packages/workflow-engine
+      '@FlowAi/workflow-persistence':
+        specifier: workspace:*
+        version: link:../../packages/workflow-persistence
+      '@FlowAi/workflow-queue':
+        specifier: workspace:*
+        version: link:../../packages/workflow-queue
       '@FlowAi/workflow-validator':
         specifier: workspace:*
         version: link:../../packages/workflow-validator
@@ -110,6 +122,40 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@26.6.4)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.1)
+
+  packages/workflow-persistence:
+    dependencies:
+      '@FlowAi/workflow-core':
+        specifier: workspace:*
+        version: link:../workflow-core
+      '@prisma/adapter-pg':
+        specifier: 7.10.0
+        version: 7.10.0
+      '@prisma/client':
+        specifier: 7.10.0
+        version: 7.10.0(prisma@7.10.0(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@7.0.2))(typescript@7.0.2)
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      pg:
+        specifier: ^8.23.0
+        version: 8.23.0
+
+  packages/workflow-queue:
+    dependencies:
+      ioredis:
+        specifier: ^6.0.0
+        version: 6.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.4
+        version: 26.6.4
+      bullmq:
+        specifier: ^6.3.11
+        version: 6.3.11(ioredis@6.0.0)(pg@8.23.0)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   packages/workflow-validator:
     dependencies:
@@ -679,9 +725,6 @@ packages:
 
   '@types/lodash@4.17.25':
     resolution: {integrity: sha512-+K1NIO8I+F9/wNulfVvu23QYd0Pe9/OCqRrim4NoYIf1VoEDL90Ve4ClzpyqBLc7NpGGWRvYNCKZ1BE/Jpf8dQ==}
-
-  '@types/node@26.6.0':
-    resolution: {integrity: sha512-FWWQhDlKSnEJVe+CTJCQL8Fol7s1MKo3Ud0fjryxoOoH+hwMIPxol0MguYrLi2I0VvIFwOU2DwdWET2+px15qg==}
 
   '@types/node@26.6.4':
     resolution: {integrity: sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==}
@@ -2172,7 +2215,7 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
 
   '@types/chai@5.2.3':
     dependencies:
@@ -2181,7 +2224,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
 
   '@types/d3-array@3.0.3': {}
 
@@ -2219,7 +2262,7 @@ snapshots:
 
   '@types/express-serve-static-core@5.1.3':
     dependencies:
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
       '@types/qs': 6.15.1
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -2236,17 +2279,13 @@ snapshots:
 
   '@types/lodash@4.17.25': {}
 
-  '@types/node@26.6.0':
-    dependencies:
-      undici-types: 8.9.0
-
   '@types/node@26.6.4':
     dependencies:
       undici-types: 8.9.0
 
   '@types/pg@8.23.1':
     dependencies:
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
       pg-protocol: 1.16.0
       pg-types: 2.2.0
 
@@ -2260,12 +2299,12 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
 
   '@types/serve-static@2.2.0':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 26.6.0
+      '@types/node': 26.6.4
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true

@@ -18,3 +18,7 @@ export const executionQueue = new Queue<ExecutionJobData>(
     connection,
   },
 );
+
+export async function enqueueExecution(data: ExecutionJobData) {
+  return executionQueue.add("execute-workflow", data);
+}

@@ -3,7 +3,7 @@ import { Worker, type Job } from "bullmq";
 import {
   EXECUTION_QUEUE_NAME,
   type ExecutionJobData,
-} from "./queue/execution-queue.js";
+} from "@FlowAi/workflow-queue/contract";
 
 const connection = {
   host: process.env.REDIS_HOST ?? "localhost",

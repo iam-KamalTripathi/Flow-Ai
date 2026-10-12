@@ -1,0 +1,30 @@
+{
+  "name": "@FlowAi/workflow-queue",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./contract": {
+      "types": "./dist/contract.d.ts",
+      "import": "./dist/contract.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "bullmq": "^6.3.11",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0"
+  }
+}
