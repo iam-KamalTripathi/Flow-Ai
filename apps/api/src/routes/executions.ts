@@ -1,7 +1,9 @@
 import { Router } from "express";
 
-import { ExecutionRepository } from "../db/execution-repositry.js";
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import {
+  ExecutionRepository,
+  WorkflowRepository,
+} from "@FlowAi/workflow-persistence";
 import { ExecutionService } from "../services/execution-service.js";
 
 const router: Router = Router();

@@ -2,8 +2,10 @@ import { Router } from "express";
 
 import type { WorkflowDefinition } from "@FlowAi/workflow-core";
 
-import { ExecutionRepository } from "../db/execution-repositry.js";
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import {
+  ExecutionRepository,
+  WorkflowRepository,
+} from "@FlowAi/workflow-persistence";
 import { ExecutionService } from "../services/execution-service.js";
 import { WorkflowService } from "../services/workflow-service.js";
 

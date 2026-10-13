@@ -1,6 +1,5 @@
 import type { ExecutionContext } from "@FlowAi/workflow-engine";
-import { ExecutionRepository } from "../db/execution-repositry.js";
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import { ExecutionRepository, WorkflowRepository } from "@FlowAi/workflow-persistence";
 export interface ExecuteWorkflowInput {
     triggerInput: unknown;
 }
@@ -40,5 +39,12 @@ export declare class ExecutionService {
         startedAt: Date;
         finishedAt: Date | null;
     }[]>;
+    resumeExecution(executionId: string): Promise<ExecutionContext>;
+    queueWorkflowExecution(workflowId: string, input: ExecuteWorkflowInput): Promise<{
+        executionId: `${string}-${string}-${string}-${string}-${string}`;
+        workflowId: string;
+        status: "pending";
+        jobId: string | undefined;
+    }>;
 }
 //# sourceMappingURL=execution-service.d.ts.map

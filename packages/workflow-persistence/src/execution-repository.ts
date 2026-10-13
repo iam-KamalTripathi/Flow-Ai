@@ -4,7 +4,6 @@ import type {
 } from "@FlowAi/workflow-engine";
 
 import { Prisma as PrismaTypes } from "@prisma/client";
-import { Prisma } from "@prisma/client";
 
 import { prisma } from "./prisma.js";
 
@@ -19,19 +18,21 @@ export interface CreateExecutionInput {
 
 export class ExecutionRepository {
   async create(input: CreateExecutionInput) {
-    return prisma.execution.create({
-      data: {
-        id: input.id,
-        workflowId: input.workflowId,
-        status: input.status,
-        currentNodeId: input.currentNodeId,
-        triggerInput:
-          input.triggerInput === undefined
-            ? undefined
-            : JSON.parse(JSON.stringify(input.triggerInput)),
-        startedAt: new Date(input.startedAt),
-      },
-    });
+    const data: PrismaTypes.ExecutionUncheckedCreateInput = {
+      id: input.id,
+      workflowId: input.workflowId,
+      status: input.status,
+      currentNodeId: input.currentNodeId,
+      startedAt: new Date(input.startedAt),
+    };
+
+    if (input.triggerInput !== undefined) {
+      data.triggerInput = JSON.parse(
+        JSON.stringify(input.triggerInput),
+      ) as PrismaTypes.InputJsonValue;
+    }
+
+    return prisma.execution.create({ data });
   }
 
   async updateFromContext(context: ExecutionContext) {
@@ -60,9 +61,7 @@ export class ExecutionRepository {
 
   async findById(id: string) {
     return prisma.execution.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
       include: {
         workflow: true,
       },
@@ -71,9 +70,7 @@ export class ExecutionRepository {
 
   async findByWorkflowId(workflowId: string) {
     return prisma.execution.findMany({
-      where: {
-        workflowId,
-      },
+      where: { workflowId },
       orderBy: {
         startedAt: "desc",
       },
@@ -82,24 +79,22 @@ export class ExecutionRepository {
 
   async saveSnapshot(executionId: string, snapshot: ExecutionSnapshot) {
     return prisma.execution.update({
-      where: {
-        id: executionId,
-      },
+      where: { id: executionId },
       data: {
-        snapshot: JSON.parse(JSON.stringify(snapshot)) as Prisma.InputJsonValue,
+        snapshot: JSON.parse(
+          JSON.stringify(snapshot),
+        ) as PrismaTypes.InputJsonValue,
       },
     });
   }
 
   async prepareForResume(executionId: string, currentNodeId: string) {
     return prisma.execution.update({
-      where: {
-        id: executionId,
-      },
+      where: { id: executionId },
       data: {
         status: "pending",
         currentNodeId,
-        error: Prisma.DbNull,
+        error: PrismaTypes.DbNull,
         finishedAt: null,
       },
     });
@@ -107,9 +102,7 @@ export class ExecutionRepository {
 
   async markEnqueueFailed(executionId: string, message: string) {
     return prisma.execution.update({
-      where: {
-        id: executionId,
-      },
+      where: { id: executionId },
       data: {
         status: "failed",
         error: {

@@ -12,7 +12,7 @@ export class ExecutionEngine {
     }
     async execute(context) {
         context.status = "running";
-        const startNode = this.findStartNode();
+        const startNode = this.findStartNode(context);
         if (!startNode) {
             context.status = "failed";
             throw new Error("Workflow does not contain a trigger node.");
@@ -44,7 +44,12 @@ export class ExecutionEngine {
             return context;
         }
     }
-    findStartNode() {
+    findStartNode(context) {
+        // Resume execution from the node stored in the snapshot.
+        if (context.currentNodeId !== null) {
+            return this.graph.nodes.get(context.currentNodeId);
+        }
+        // Normal execution starts from the trigger.
         return this.workflow.nodes.find((node) => {
             const incoming = this.graph.incomingEdges.get(node.id) ?? [];
             return incoming.length === 0 && node.type.startsWith("trigger.");

@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { ExecutionRepository } from "../db/execution-repositry.js";
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import { ExecutionRepository, WorkflowRepository, } from "@FlowAi/workflow-persistence";
 import { ExecutionService } from "../services/execution-service.js";
 import { WorkflowService } from "../services/workflow-service.js";
 const router = Router();
@@ -36,23 +35,34 @@ router.get("/", async (_req, res) => {
 // Execute workflow
 router.post("/:id/execute", async (req, res) => {
     try {
-        const result = await executionService.executeWorkflow(req.params.id, {
+        const result = await executionService.queueWorkflowExecution(req.params.id, {
             triggerInput: req.body?.triggerInput,
         });
-        res.status(200).json({
+        res.status(202).json({
             executionId: result.executionId,
             workflowId: result.workflowId,
             status: result.status,
-            currentNodeId: result.currentNodeId,
-            triggerInput: result.triggerInput,
-            nodeOutputs: Object.fromEntries(result.nodeOutputs),
-            error: result.error,
+            jobId: result.jobId,
+            message: "Workflow execution accepted and queued.",
         });
     }
     catch (error) {
-        res.status(400).json({
-            error: error instanceof Error ? error.message : "Failed to execute workflow.",
-        });
+        const message = error instanceof Error
+            ? error.message
+            : "Failed to queue workflow execution.";
+        if (message.includes("not found")) {
+            res.status(404).json({ error: message });
+            return;
+        }
+        if (message.startsWith("Invalid workflow:")) {
+            res.status(400).json({ error: message });
+            return;
+        }
+        if (message.startsWith("Failed to queue workflow execution:")) {
+            res.status(503).json({ error: message });
+            return;
+        }
+        res.status(500).json({ error: message });
     }
 });
 router.get("/:id/executions", async (req, res) => {

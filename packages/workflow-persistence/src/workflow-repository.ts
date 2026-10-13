@@ -16,9 +16,7 @@ export class WorkflowRepository {
 
   async findById(id: string) {
     return prisma.workflow.findUnique({
-      where: {
-        id,
-      },
+      where: { id },
     });
   }
 
@@ -32,9 +30,7 @@ export class WorkflowRepository {
 
   async update(id: string, workflow: WorkflowDefinition) {
     return prisma.workflow.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: {
         name: workflow.name,
         version: workflow.version,
@@ -45,9 +41,7 @@ export class WorkflowRepository {
 
   async delete(id: string) {
     return prisma.workflow.delete({
-      where: {
-        id,
-      },
+      where: { id },
     });
   }
 }

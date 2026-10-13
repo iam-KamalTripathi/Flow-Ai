@@ -16,8 +16,10 @@ import type {
 
 import { buildGraph } from "@FlowAi/workflow-validator";
 
-import { ExecutionRepository } from "../db/execution-repositry.js";
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import {
+  ExecutionRepository,
+  WorkflowRepository,
+} from "@FlowAi/workflow-persistence";
 
 export interface ExecuteWorkflowInput {
   triggerInput: unknown;

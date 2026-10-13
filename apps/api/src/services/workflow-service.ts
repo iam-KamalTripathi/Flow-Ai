@@ -1,7 +1,7 @@
 import type { WorkflowDefinition } from "@FlowAi/workflow-core";
 import { validateWorkflow } from "@FlowAi/workflow-validator";
 
-import { WorkflowRepository } from "../db/workflow-repository.js";
+import { WorkflowRepository } from "@FlowAi/workflow-persistence";
 
 export class WorkflowService {
   constructor(private readonly repository: WorkflowRepository) {}

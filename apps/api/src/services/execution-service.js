@@ -1,6 +1,7 @@
-import { ExecutionEngine, ExecutorRegistry } from "@FlowAi/workflow-engine";
+import { enqueueExecution } from "@FlowAi/workflow-queue";
+import { validateWorkflow } from "@FlowAi/workflow-validator";
+import { ExecutionEngine, ExecutorRegistry, createExecutionSnapshot, } from "@FlowAi/workflow-engine";
 import { buildGraph } from "@FlowAi/workflow-validator";
-import { createExecutionSnapshot } from "@FlowAi/workflow-engine";
 export class ExecutionService {
     workflowRepository;
     executionRepository;
@@ -71,5 +72,113 @@ export class ExecutionService {
             throw new Error(`Workflow "${workflowId}" not found.`);
         }
         return this.executionRepository.findByWorkflowId(workflowId);
+    }
+    async resumeExecution(executionId) {
+        // 1. Load the failed execution
+        const execution = await this.executionRepository.findById(executionId);
+        if (!execution) {
+            throw new Error(`Execution "${executionId}" not found.`);
+        }
+        // 2. Only failed executions can be resumed
+        if (execution.status !== "failed") {
+            throw new Error(`Execution "${executionId}" is not failed and cannot be resumed.`);
+        }
+        // 3. A failed execution must have a snapshot
+        if (execution.snapshot === null) {
+            throw new Error(`Execution "${executionId}" does not have a recovery snapshot.`);
+        }
+        // 4. Restore the snapshot
+        const snapshot = execution.snapshot;
+        // 5. Get the current workflow definition
+        const workflow = execution.workflow
+            .definition;
+        // 6. Rebuild the graph
+        const graph = buildGraph(workflow);
+        // 7. Create executors
+        const registry = new ExecutorRegistry();
+        // 8. Create execution engine
+        const engine = new ExecutionEngine(workflow, graph, registry);
+        // 9. Restore runtime execution context
+        const context = {
+            executionId: execution.id,
+            workflowId: execution.workflowId,
+            status: "pending",
+            currentNodeId: snapshot.currentNodeId,
+            triggerInput: snapshot.triggerInput,
+            nodeOutputs: new Map(Object.entries(snapshot.nodeOutputs)),
+            startedAt: execution.startedAt.toISOString(),
+        };
+        // 10. Mark execution as ready for resume
+        if (snapshot.currentNodeId === null) {
+            throw new Error(`Execution "${executionId}" does not have a resume node.`);
+        }
+        await this.executionRepository.prepareForResume(execution.id, snapshot.currentNodeId);
+        try {
+            // 11. Continue execution from snapshot.currentNodeId
+            const result = await engine.execute(context);
+            // 12. If it fails again, save the new recovery state
+            if (result.status === "failed") {
+                const newSnapshot = createExecutionSnapshot(result);
+                await this.executionRepository.saveSnapshot(result.executionId, newSnapshot);
+            }
+            // 13. Persist final state
+            await this.executionRepository.updateFromContext(result);
+            return result;
+        }
+        catch (error) {
+            // 14. Handle unexpected engine failures
+            context.status = "failed";
+            const newSnapshot = createExecutionSnapshot(context);
+            await this.executionRepository.saveSnapshot(context.executionId, newSnapshot);
+            await this.executionRepository.updateFromContext(context);
+            throw error;
+        }
+    }
+    async queueWorkflowExecution(workflowId, input) {
+        // 1. Load the saved workflow.
+        const savedWorkflow = await this.workflowRepository.findById(workflowId);
+        if (!savedWorkflow) {
+            throw new Error(`Workflow "${workflowId}" not found.`);
+        }
+        // 2. Validate the stored definition before scheduling it.
+        const workflow = savedWorkflow.definition;
+        const validation = validateWorkflow(workflow);
+        if (!validation.valid) {
+            throw new Error(`Invalid workflow: ${validation.errors
+                .map((issue) => issue.message)
+                .join("; ")}`);
+        }
+        // 3. Generate an ID for this execution.
+        const executionId = crypto.randomUUID();
+        const startedAt = new Date().toISOString();
+        // 4. Persist the execution before enqueueing the job.
+        await this.executionRepository.create({
+            id: executionId,
+            workflowId: savedWorkflow.id,
+            status: "pending",
+            currentNodeId: null,
+            triggerInput: input.triggerInput,
+            startedAt,
+        });
+        try {
+            // 5. Send a small job message to Redis through BullMQ.
+            const job = await enqueueExecution({
+                executionId,
+                workflowId: savedWorkflow.id,
+            });
+            // 6. Return the information needed by the API route.
+            return {
+                executionId,
+                workflowId: savedWorkflow.id,
+                status: "pending",
+                jobId: job.id,
+            };
+        }
+        catch (error) {
+            // 7. If enqueueing fails, persist that failure.
+            const message = error instanceof Error ? error.message : String(error);
+            await this.executionRepository.markEnqueueFailed(executionId, message);
+            throw new Error(`Failed to queue workflow execution: ${message}`);
+        }
     }
 }
