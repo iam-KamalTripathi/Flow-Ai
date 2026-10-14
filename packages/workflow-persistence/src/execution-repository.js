@@ -15,15 +15,15 @@ export class ExecutionRepository {
         return prisma.execution.create({ data });
     }
     async updateFromContext(context) {
+        const isFinished = context.status === "success" || context.status === "failed";
         const data = {
             status: context.status,
             currentNodeId: context.currentNodeId,
+            error: PrismaTypes.DbNull,
+            finishedAt: isFinished ? new Date() : null,
         };
         if (context.error !== undefined) {
             data.error = JSON.parse(JSON.stringify(context.error));
-        }
-        if (context.status === "success" || context.status === "failed") {
-            data.finishedAt = new Date();
         }
         return prisma.execution.update({
             where: {

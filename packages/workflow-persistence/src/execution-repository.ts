@@ -36,19 +36,20 @@ export class ExecutionRepository {
   }
 
   async updateFromContext(context: ExecutionContext) {
+    const isFinished =
+      context.status === "success" || context.status === "failed";
+
     const data: PrismaTypes.ExecutionUpdateInput = {
       status: context.status,
       currentNodeId: context.currentNodeId,
+      error: PrismaTypes.DbNull,
+      finishedAt: isFinished ? new Date() : null,
     };
 
     if (context.error !== undefined) {
       data.error = JSON.parse(
         JSON.stringify(context.error),
       ) as PrismaTypes.InputJsonValue;
-    }
-
-    if (context.status === "success" || context.status === "failed") {
-      data.finishedAt = new Date();
     }
 
     return prisma.execution.update({
