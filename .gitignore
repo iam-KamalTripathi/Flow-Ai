@@ -122,3 +122,58 @@ redis-data/
 
 credentials.json
 service-account.json
+
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.*
+
+# Build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Vite
+apps/web/.vite/
+apps/web/dist/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Editor and IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Test artifacts
+playwright-report/
+test-results/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+
+# Prisma local artifacts (if generated locally)
+# Keep schema.prisma and migrations tracked.
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
